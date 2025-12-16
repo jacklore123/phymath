@@ -1,0 +1,17 @@
+# 忽略系统文件
+*.log
+*.dat
+*.ini
+
+# 忽略常见文件夹
+Documents/
+Downloads/
+Desktop/
+AppData/
+OneDrive/
+Pictures/
+Videos/
+
+# 忽略 PyCharm、VS Code 等IDE的配置文件夹
+.vscode/
+.idea/
