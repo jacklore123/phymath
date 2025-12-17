@@ -1,4 +1,5 @@
 import random
+import json
 
 # ======================
 # 学生状态（世界状态）
@@ -24,14 +25,13 @@ ideal_state = {
     "level": 4.5  # 理想掌握程度
 }
 
-print("当前学生学习状态：")
-print(student_state)
-
-
 # ======================
 # 显示学习位置
 # ======================
 def show_learning_position(state):
+    """
+    打印当前学生的学习内容、进度、专注度和疲劳度。
+    """
     topic = state["topic"]
     level = state["level"]
     attention = state["attention"]
@@ -41,13 +41,14 @@ def show_learning_position(state):
     print(f"当前轨迹位置：Level {round(level, 2)}")
     print(f"专注度：{round(attention, 2)} | 疲劳度：{round(fatigue, 2)}")
 
-
 # ======================
 # 进度条显示
 # ======================
 def show_progress_bar(state, max_level=5.0, bar_length=10):
+    """
+    显示学习进度条。
+    """
     level = state["level"]
-
     if level < 0:
         level = 0
     if level > max_level:
@@ -55,15 +56,16 @@ def show_progress_bar(state, max_level=5.0, bar_length=10):
 
     filled_length = int(level / max_level * bar_length)
     empty_length = bar_length - filled_length
-
     bar = "■" * filled_length + "□" * empty_length
     print(f"学习进度：[{bar}] {round(level, 2)} / {max_level}")
-
 
 # ======================
 # 理想轨迹对齐对比
 # ======================
 def compare_with_ideal(student, ideal):
+    """
+    比较学生当前学习进度与理想轨迹之间的差距。
+    """
     print("\n=== 学习轨迹对齐对比 ===")
 
     print(f"\n【理想轨迹 - {ideal['name']}】")
@@ -78,23 +80,25 @@ def compare_with_ideal(student, ideal):
     else:
         print("\n✅ 已达到或超过理想轨迹")
 
-
 # ======================
 # 模拟摄像头信号
 # ======================
 def simulate_camera_signal():
-    # 模拟摄像头信号，返回专注度与情绪波动
-    # 专注度：0~1，情绪波动：-0.5到0.5
+    """
+    模拟摄像头信号，返回专注度与情绪波动。
+    专注度：0~1，情绪波动：-0.5到0.5
+    """
     attention_signal = random.uniform(0.7, 1)  # 随机生成专注度
     emotion_signal = random.uniform(-0.3, 0.3)  # 随机生成情绪波动
     return attention_signal, emotion_signal
-
 
 # ======================
 # 摄像头信号应用
 # ======================
 def apply_camera_signal(state):
-    # 获取摄像头信号
+    """
+    根据摄像头信号调整学生的专注度和疲劳度。
+    """
     attention_signal, emotion_signal = simulate_camera_signal()
 
     # 根据摄像头信号调整专注度和疲劳度
@@ -107,11 +111,13 @@ def apply_camera_signal(state):
     # 输出调整后的结果
     print(f"摄像头信号 -> 专注度: {round(state['attention'], 2)} | 疲劳度: {round(state['fatigue'], 2)}")
 
-
 # ======================
 # 教学行为（世界演化规则）
 # ======================
 def apply_teaching_action(state, action):
+    """
+    根据教学行为调整学生的学习状态。
+    """
     attention = state["attention"]
     fatigue = state["fatigue"]
 
@@ -147,26 +153,31 @@ def apply_teaching_action(state, action):
     print(f"学习效率系数：{round(efficiency, 2)}")
     show_progress_bar(state)
 
+# ======================
+# 模拟多个学生的学习状态
+# ======================
+students = [
+    {"name": "学生A", "age": 17, "subject": "物理", "module": "力学", "topic": "牛顿第二定律", "level": 2.6, "attention": 0.8, "fatigue": 0.2},
+    {"name": "学生B", "age": 16, "subject": "物理", "module": "力学", "topic": "牛顿第二定律", "level": 3.2, "attention": 0.9, "fatigue": 0.1},
+    {"name": "学生C", "age": 18, "subject": "物理", "module": "力学", "topic": "牛顿第二定律", "level": 2.0, "attention": 0.6, "fatigue": 0.3}
+]
 
 # ======================
-# 单次教学
+# 为每个学生进行一次完整学习过程
 # ======================
-print("\n进行一次教学行为：讲解")
-apply_teaching_action(student_state, "讲解")
-show_learning_position(student_state)
-compare_with_ideal(student_state, ideal_state)
+for student in students:
+    print(f"\n开始 {student['name']} 的学习过程：")
+    for action in ["讲解", "例题", "反思", "休息"]:
+        print(f"\n教学行为：{action}")
+        apply_teaching_action(student, action)
+        apply_camera_signal(student)  # 应用摄像头信号调整学生状态
+        show_learning_position(student)
+        compare_with_ideal(student, ideal_state)
 
 # ======================
-# 完整学习流程
+# 保存学习进度到文件（示例）
 # ======================
-teaching_plan = ["讲解", "例题", "反思", "休息"]
+with open("students_learning_progress.json", "w") as file:
+    json.dump(students, file, indent=4)
 
-print("\n开始一次完整学习过程：")
-for action in teaching_plan:
-    print(f"\n教学行为：{action}")
-    apply_teaching_action(student_state, action)
-    apply_camera_signal(student_state)  # 应用摄像头信号调整学生状态
-    show_learning_position(student_state)
-    compare_with_ideal(student_state, ideal_state)
-
-compare_with_ideal(student_state, ideal_state)
+print("\n学习数据已保存到 'students_learning_progress.json'")
