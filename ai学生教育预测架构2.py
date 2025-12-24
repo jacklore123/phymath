@@ -1,7 +1,6 @@
 """
 AI学生教育预测模型系统
 基于专利：一种基于ai学生的教育预测模型的建构方法
-版本：v1.0
 """
 
 import numpy as np
@@ -1639,4 +1638,5 @@ if __name__ == "__main__":
 
         traceback.print_exc()
     finally:
+
         print("\n🎓 AI学生教育预测系统已关闭")
